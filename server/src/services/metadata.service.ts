@@ -325,9 +325,10 @@ export class MetadataService extends BaseService {
 
       if (paths.length > 0) {
         sidecarImportCount += paths.length;
+        // throw new Error(JSON.stringify(paths));
 
-        const sidecarImports = paths.map((path) => ({
-          path: path.normalize(path),
+        const sidecarImports = paths.map((sidecarPath) => ({
+          path: path.normalize(sidecarPath),
           type: AssetFileType.SIDECAR,
         }));
 
@@ -445,8 +446,6 @@ export class MetadataService extends BaseService {
         name: JobName.METADATA_EXTRACTION,
         data: { id: sidecar.assetId, source: 'upload' },
       });
-
-      // throw new Error(JSON.stringify(sidecar));
     }
 
     return JobStatus.SUCCESS;
@@ -537,7 +536,7 @@ export class MetadataService extends BaseService {
     let sidecars: SidecarAssetFileEntity[] = [];
 
     for await (const sidecar of sidecarPagination) {
-      sidecars.concat(...(sidecar as SidecarAssetFileEntity[]));
+      sidecars.push(...(sidecar as SidecarAssetFileEntity[]));
     }
 
     if (sidecars.length > 1) {
@@ -547,18 +546,31 @@ export class MetadataService extends BaseService {
     const sidecar = sidecars[0];
 
     if (!sidecar && asset.type === AssetType.IMAGE) {
-      return this.metadataRepository.readTags(asset.originalPath);
+      const tagResult = await this.metadataRepository.readTags(asset.originalPath);
+      if (tagResult.success) {
+        return tagResult.tags;
+      }
+      return {};
     }
 
     return this.mergeExifTags(asset, sidecar);
   }
 
   private async mergeExifTags(asset: AssetEntity, sidecar: AssetFileEntity | null): Promise<ImmichTags> {
-    const [mediaTags, sidecarTags, videoTags] = await Promise.all([
+    const [mediaTagResult, sidecarTagResult, videoTags] = await Promise.all([
       this.metadataRepository.readTags(asset.originalPath),
       sidecar ? this.metadataRepository.readTags(sidecar.path) : null,
       asset.type === AssetType.VIDEO ? this.getVideoTags(asset.originalPath) : null,
     ]);
+
+    const mediaTags = mediaTagResult.success ? mediaTagResult.tags : {};
+
+    const sidecarTags = sidecarTagResult?.success ? sidecarTagResult.tags : {};
+
+    if (sidecar && sidecarTagResult?.success === false && sidecarTagResult?.error === 'ENOENT') {
+      // Sidecar not found on disk, delete sidecar asset file
+      await this.assetFileRepository.remove(sidecar);
+    }
 
     // prefer dates from sidecar tags
     if (sidecarTags) {

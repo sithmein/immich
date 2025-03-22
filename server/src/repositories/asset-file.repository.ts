@@ -134,4 +134,8 @@ export class AssetFileRepository {
 
     return result.map((row) => row.path as string);
   }
+
+  async remove(assetFile: { id: string }): Promise<void> {
+    await this.db.deleteFrom('asset_files').where('id', '=', asUuid(assetFile.id)).execute();
+  }
 }

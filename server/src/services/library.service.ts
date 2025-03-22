@@ -247,8 +247,8 @@ export class LibraryService extends BaseService {
       return JobStatus.FAILED;
     }
 
-    const sidecarImports = job.paths.map((path) => ({
-      path: path.normalize(path),
+    const sidecarImports = job.paths.map((sidecarPath) => ({
+      path: path.normalize(sidecarPath),
       type: AssetFileType.SIDECAR,
     }));
 

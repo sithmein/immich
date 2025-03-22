@@ -12,5 +12,6 @@ export const newAssetFileRepositoryMock = (): Mocked<RepositoryInterface<AssetFi
     upsertAll: vitest.fn(),
     getAssetSidecarsByPath: vitest.fn(),
     filterSidecarPaths: vitest.fn(),
+    remove: vitest.fn(),
   };
 };
