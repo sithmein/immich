@@ -49,7 +49,7 @@ class CLIPTextFormDataLoadTest(InferenceLoadTest):
     def encode_text(self) -> None:
         request = {"clip": {"textual": {"modelName": self.environment.parsed_options.clip_model}}}
         data = [("entries", json.dumps(request)), ("text", "test search query")]
-        self.client.post("/predict", data=data)
+        self.client.post("/predict/text", data=data)
 
 
 class CLIPVisionFormDataLoadTest(InferenceLoadTest):
@@ -58,7 +58,7 @@ class CLIPVisionFormDataLoadTest(InferenceLoadTest):
         request = {"clip": {"visual": {"modelName": self.environment.parsed_options.clip_model, "options": {}}}}
         data = [("entries", json.dumps(request))]
         files = {"image": self.data}
-        self.client.post("/predict", data=data, files=files)
+        self.client.post("/predict/image", data=data, files=files)
 
 
 class RecognitionFormDataLoadTest(InferenceLoadTest):
@@ -78,4 +78,4 @@ class RecognitionFormDataLoadTest(InferenceLoadTest):
         data = [("entries", json.dumps(request))]
         files = {"image": self.data}
 
-        self.client.post("/predict", data=data, files=files)
+        self.client.post("/predict/image", data=data, files=files)

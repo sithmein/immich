@@ -162,18 +162,28 @@ def ping() -> PlainTextResponse:
     return PlainTextResponse("pong")
 
 
-@app.post("/predict", dependencies=[Depends(update_state)])
+@app.post("/predict/image", dependencies=[Depends(update_state)])
 async def predict(
     entries: InferenceEntries = Depends(get_entries),
     image: bytes | None = File(default=None),
-    text: str | None = Form(default=None),
 ) -> Any:
     if image is not None:
         inputs: Image | str = await run(lambda: decode_pil(image))
-    elif text is not None:
+    else:
+        raise HTTPException(400, "An image must be provided")
+    response = await run_inference(inputs, entries)
+    return ORJSONResponse(response)
+
+
+@app.post("/predict/text", dependencies=[Depends(update_state)])
+async def predict(
+    entries: InferenceEntries = Depends(get_entries),
+    text: str | None = Form(default=None),
+) -> Any:
+    if text is not None:
         inputs = text
     else:
-        raise HTTPException(400, "Either image or text must be provided")
+        raise HTTPException(400, "A text must be provided")
     response = await run_inference(inputs, entries)
     return ORJSONResponse(response)
 

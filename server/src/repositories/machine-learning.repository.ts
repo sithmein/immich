@@ -127,7 +127,13 @@ export class MachineLearningRepository {
       }
 
       try {
-        const response = await fetch(new URL('/predict', url), { method: 'POST', body: formData });
+        let path = '/predict';
+        if (formData.has('text')) {
+          path = path + '/text';
+        } else {
+          path = path + '/image';
+        }
+        const response = await fetch(new URL(path, url), { method: 'POST', body: formData });
         if (response.ok) {
           this.setUrlAvailability(url, true);
           return response.json();

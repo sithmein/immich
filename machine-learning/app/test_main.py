@@ -946,7 +946,7 @@ class TestPredictionEndpoints:
         expected = responses["clip"]["image"]
 
         response = deployed_app.post(
-            "http://localhost:3003/predict",
+            "http://localhost:3003/predict/image",
             data={"entries": json.dumps({"clip": {"visual": {"modelName": "ViT-B-32__openai"}}})},
             files={"image": byte_image.getvalue()},
         )
@@ -963,7 +963,7 @@ class TestPredictionEndpoints:
         expected = responses["clip"]["text"]
 
         response = deployed_app.post(
-            "http://localhost:3003/predict",
+            "http://localhost:3003/predict/text",
             data={
                 "entries": json.dumps(
                     {
@@ -987,7 +987,7 @@ class TestPredictionEndpoints:
         pil_image.save(byte_image, format="jpeg")
 
         response = deployed_app.post(
-            "http://localhost:3003/predict",
+            "http://localhost:3003/predict/image",
             data={
                 "entries": json.dumps(
                     {
