@@ -46,16 +46,16 @@
         <hr />
 
         <div>
-          {#each config.machineLearning.urls as _, i (i)}
+          {#each config.machineLearning.faceUrls as _, i (i)}
             {#snippet removeButton()}
-              {#if config.machineLearning.urls.length > 1}
+              {#if config.machineLearning.faceUrls.length > 1}
                 <CircleIconButton
                   size="24"
                   class="ml-2"
                   padding="2"
                   color="red"
                   title=""
-                  onclick={() => config.machineLearning.urls.splice(i, 1)}
+                  onclick={() => config.machineLearning.faceUrls.splice(i, 1)}
                   icon={mdiMinusCircle}
                 />
               {/if}
@@ -63,12 +63,12 @@
 
             <SettingInputField
               inputType={SettingInputFieldType.TEXT}
-              label={i === 0 ? $t('url') : undefined}
-              description={i === 0 ? $t('admin.machine_learning_url_description') : undefined}
-              bind:value={config.machineLearning.urls[i]}
+              label={i === 0 ? $t('admin.face_url') : undefined}
+              description={i === 0 ? $t('admin.machine_learning_face_url_description') : undefined}
+              bind:value={config.machineLearning.faceUrls[i]}
               required={i === 0}
               disabled={disabled || !config.machineLearning.enabled}
-              isEdited={i === 0 && !isEqual(config.machineLearning.urls, savedConfig.machineLearning.urls)}
+              isEdited={i === 0 && !isEqual(config.machineLearning.faceUrls, savedConfig.machineLearning.faceUrls)}
               trailingSnippet={removeButton}
             />
           {/each}
@@ -78,7 +78,85 @@
           class="mb-2"
           size="small"
           shape="round"
-          onclick={() => config.machineLearning.urls.splice(0, 0, '')}
+          onclick={() => config.machineLearning.faceUrls.splice(0, 0, '')}
+          disabled={disabled || !config.machineLearning.enabled}>{$t('add_url')}</Button
+        >
+
+        <hr />
+
+        <div>
+          {#each config.machineLearning.imageUrls as _, i (i)}
+            {#snippet removeButton()}
+              {#if config.machineLearning.imageUrls.length > 1}
+                <CircleIconButton
+                  size="24"
+                  class="ml-2"
+                  padding="2"
+                  color="red"
+                  title=""
+                  onclick={() => config.machineLearning.imageUrls.splice(i, 1)}
+                  icon={mdiMinusCircle}
+                />
+              {/if}
+            {/snippet}
+
+            <SettingInputField
+              inputType={SettingInputFieldType.TEXT}
+              label={i === 0 ? $t('admin.image_url') : undefined}
+              description={i === 0 ? $t('admin.machine_learning_image_url_description') : undefined}
+              bind:value={config.machineLearning.imageUrls[i]}
+              required={i === 0}
+              disabled={disabled || !config.machineLearning.enabled}
+              isEdited={i === 0 && !isEqual(config.machineLearning.imageUrls, savedConfig.machineLearning.imageUrls)}
+              trailingSnippet={removeButton}
+            />
+          {/each}
+        </div>
+
+        <Button
+          class="mb-2"
+          size="small"
+          shape="round"
+          onclick={() => config.machineLearning.imageUrls.splice(0, 0, '')}
+          disabled={disabled || !config.machineLearning.enabled}>{$t('add_url')}</Button
+        >
+
+        <hr />
+
+        <div>
+          {#each config.machineLearning.textUrls as _, i (i)}
+            {#snippet removeButton()}
+              {#if config.machineLearning.textUrls.length > 1}
+                <CircleIconButton
+                  size="24"
+                  class="ml-2"
+                  padding="2"
+                  color="red"
+                  title=""
+                  onclick={() => config.machineLearning.textUrls.splice(i, 1)}
+                  icon={mdiMinusCircle}
+                />
+              {/if}
+            {/snippet}
+
+            <SettingInputField
+              inputType={SettingInputFieldType.TEXT}
+              label={i === 0 ? $t('admin.text_url') : undefined}
+              description={i === 0 ? $t('admin.machine_learning_text_url_description') : undefined}
+              bind:value={config.machineLearning.textUrls[i]}
+              required={i === 0}
+              disabled={disabled || !config.machineLearning.enabled}
+              isEdited={i === 0 && !isEqual(config.machineLearning.textUrls, savedConfig.machineLearning.textUrls)}
+              trailingSnippet={removeButton}
+            />
+          {/each}
+        </div>
+
+        <Button
+          class="mb-2"
+          size="small"
+          shape="round"
+          onclick={() => config.machineLearning.textUrls.splice(0, 0, '')}
           disabled={disabled || !config.machineLearning.enabled}>{$t('add_url')}</Button
         >
       </div>

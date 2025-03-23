@@ -53,6 +53,9 @@ export interface SystemConfig {
   machineLearning: {
     enabled: boolean;
     urls: string[];
+    faceUrls: string[];
+    imageUrls: string[];
+    textUrls: string[];
     clip: {
       enabled: boolean;
       modelName: string;
@@ -214,6 +217,9 @@ export const defaults = Object.freeze<SystemConfig>({
   machineLearning: {
     enabled: process.env.IMMICH_MACHINE_LEARNING_ENABLED !== 'false',
     urls: [process.env.IMMICH_MACHINE_LEARNING_URL || 'http://immich-machine-learning:3003'],
+    faceUrls: [process.env.IMMICH_MACHINE_LEARNING_FACE_URL || 'http://immich-machine-learning:3003'],
+    imageUrls: [process.env.IMMICH_MACHINE_LEARNING_IMAGE_URL || 'http://immich-machine-learning:3003'],
+    textUrls: [process.env.IMMICH_MACHINE_LEARNING_TEXT_URL || 'http://immich-machine-learning:3003'],
     clip: {
       enabled: true,
       modelName: 'ViT-B-32__openai',

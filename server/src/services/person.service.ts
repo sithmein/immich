@@ -309,7 +309,7 @@ export class PersonService extends BaseService {
     }
 
     const { imageHeight, imageWidth, faces } = await this.machineLearningRepository.detectFaces(
-      machineLearning.urls,
+      machineLearning.faceUrls.length > 0 ? machineLearning.faceUrls : machineLearning.urls,
       previewFile.path,
       machineLearning.facialRecognition,
     );

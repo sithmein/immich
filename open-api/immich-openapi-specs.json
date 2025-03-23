@@ -12787,8 +12787,35 @@
           "enabled": {
             "type": "boolean"
           },
+          "faceUrls": {
+            "format": "uri",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
           "facialRecognition": {
             "$ref": "#/components/schemas/FacialRecognitionConfig"
+          },
+          "imageUrls": {
+            "format": "uri",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "textUrls": {
+            "format": "uri",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
           },
           "url": {
             "deprecated": true,
@@ -12796,6 +12823,8 @@
             "type": "string"
           },
           "urls": {
+            "deprecated": true,
+            "description": "This property was deprecated in v1.XXX.0",
             "format": "uri",
             "items": {
               "format": "uri",
@@ -12809,7 +12838,10 @@
           "clip",
           "duplicateDetection",
           "enabled",
+          "faceUrls",
           "facialRecognition",
+          "imageUrls",
+          "textUrls",
           "urls"
         ],
         "type": "object"
