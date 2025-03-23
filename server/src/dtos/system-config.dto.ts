@@ -281,7 +281,29 @@ class SystemConfigMachineLearningDto {
   @Transform(({ obj, value }) => (obj.url ? [obj.url] : value))
   @ValidateIf((dto) => dto.enabled)
   @ApiProperty({ type: 'array', items: { type: 'string', format: 'uri' }, minItems: 1 })
+  @PropertyLifecycle({ deprecatedAt: 'v1.XXX.0' })
   urls!: string[];
+
+  @IsUrl({ require_tld: false, allow_underscores: true }, { each: true })
+  @ArrayMinSize(1)
+  @Transform(({ obj, value }) => (obj.url ? [obj.url] : value))
+  @ValidateIf((dto) => dto.enabled)
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'uri' }, minItems: 1 })
+  faceUrls!: string[];
+
+  @IsUrl({ require_tld: false, allow_underscores: true }, { each: true })
+  @ArrayMinSize(1)
+  @Transform(({ obj, value }) => (obj.url ? [obj.url] : value))
+  @ValidateIf((dto) => dto.enabled)
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'uri' }, minItems: 1 })
+  imageUrls!: string[];
+
+  @IsUrl({ require_tld: false, allow_underscores: true }, { each: true })
+  @ArrayMinSize(1)
+  @Transform(({ obj, value }) => (obj.url ? [obj.url] : value))
+  @ValidateIf((dto) => dto.enabled)
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'uri' }, minItems: 1 })
+  textUrls!: string[];
 
   @Type(() => CLIPConfig)
   @ValidateNested()

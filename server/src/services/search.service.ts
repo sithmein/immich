@@ -80,7 +80,7 @@ export class SearchService extends BaseService {
     const userIds = await this.getUserIdsToSearch(auth);
 
     const embedding = await this.machineLearningRepository.encodeText(
-      machineLearning.urls,
+      machineLearning.textUrls.length > 0 ? machineLearning.textUrls : machineLearning.urls,
       dto.query,
       machineLearning.clip,
     );
