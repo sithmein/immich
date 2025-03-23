@@ -170,7 +170,13 @@ export class MachineLearningRepository {
       ...this.config.urls.filter((url) => !this.isHealthy(url)),
     ]) {
       try {
-        const response = await fetch(new URL('predict', url), { method: 'POST', body: formData });
+        let path = '/predict';
+        if (formData.has('text')) {
+          path = path + '/text';
+        } else {
+          path = path + '/image';
+        }
+        const response = await fetch(new URL(path, url), { method: 'POST', body: formData });
         if (response.ok) {
           this.setHealthy(url, true);
           return response.json();
