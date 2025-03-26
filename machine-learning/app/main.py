@@ -54,6 +54,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
             f"{f'after {settings.model_ttl}s of inactivity' if settings.model_ttl > 0 else 'disabled'}."
         )
     )
+    log.info(f"Enabled tasks: {', '.join(settings.enabled_tasks)}.")
 
     try:
         if settings.request_threads > 0:
@@ -162,11 +163,29 @@ def ping() -> PlainTextResponse:
     return PlainTextResponse("pong")
 
 
+@app.post("/predict/face", dependencies=[Depends(update_state)])
+async def predict(
+    entries: InferenceEntries = Depends(get_entries),
+    image: bytes | None = File(default=None),
+) -> Any:
+    if not ("face" in settings.enabled_tasks):
+        log.debug(f"Rejected facial recognition tasks since it has been turned off by configuration.")
+        raise HTTPException(501, "Facial recognition has been turned off by configuration")
+    return await predict_image(entries, image)
+
+
 @app.post("/predict/image", dependencies=[Depends(update_state)])
 async def predict(
     entries: InferenceEntries = Depends(get_entries),
     image: bytes | None = File(default=None),
 ) -> Any:
+    if not ("image" in settings.enabled_tasks):
+        log.debug(f"Rejected image classification tasks since it has been turned off by configuration.")
+        raise HTTPException(501, "Image classification has been turned off by configuration")
+    return await predict_image(entries, image)
+
+
+async def predict_image(entries: InferenceEntries, image: bytes):
     if image is not None:
         inputs: Image | str = await run(lambda: decode_pil(image))
     else:
@@ -180,6 +199,9 @@ async def predict(
     entries: InferenceEntries = Depends(get_entries),
     text: str | None = Form(default=None),
 ) -> Any:
+    if not ("text" in settings.enabled_tasks):
+        log.debug(f"Rejected text classification/smart search tasks since it has been turned off by configuration.")
+        raise HTTPException(501, "Text classification/smart search has been turned off by configuration")
     if text is not None:
         inputs = text
     else:

@@ -78,4 +78,4 @@ class RecognitionFormDataLoadTest(InferenceLoadTest):
         data = [("entries", json.dumps(request))]
         files = {"image": self.data}
 
-        self.client.post("/predict/image", data=data, files=files)
+        self.client.post("/predict/face", data=data, files=files)

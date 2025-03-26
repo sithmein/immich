@@ -6,10 +6,12 @@ from pathlib import Path
 from socket import socket
 
 from gunicorn.arbiter import Arbiter
-from pydantic import BaseModel
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict, NoDecode
 from rich.console import Console
 from rich.logging import RichHandler
+from typing import Set
+from typing_extensions import Annotated
 from uvicorn import Server
 from uvicorn.workers import UvicornWorker
 
@@ -68,11 +70,16 @@ class Settings(BaseSettings):
     rknn_threads: int = 1
     preload: PreloadModelData | None = None
     max_batch_size: MaxBatchSize | None = None
+    enabled_tasks : Annotated[Set[str], NoDecode] = { "face", "image", "text" }
 
     @property
     def device_id(self) -> str:
         return os.environ.get("MACHINE_LEARNING_DEVICE_ID", "0")
 
+    @field_validator('enabled_tasks', mode='before')
+    @classmethod
+    def decode_enabled_tasks(cls, v: str) -> Set[str]:
+        return [x for x in v.split(',')]
 
 class LogSettings(BaseSettings):
     model_config = SettingsConfigDict(case_sensitive=False)
