@@ -124,15 +124,17 @@ export class MachineLearningRepository {
   }
 
   private tick() {
-    for (const url of this.config.urls) {
-      void this.check(url);
+    for (const baseUrl of this.config.urls) {
+      for (const task of ["face", "text", "image"]) {
+        void this.check(baseUrl, "/predict/" + task);
+      }
     }
   }
 
-  private async check(url: string) {
+  private async check(baseUrl: string, path: string) {
     let isHealthy = false;
     try {
-      const response = await fetch(new URL('ping', url), {
+      const response = await fetch(new URL('/ping' + path, baseUrl), {
         signal: AbortSignal.timeout(this.config.availabilityChecks.timeout),
       });
       if (response.ok) {
@@ -142,7 +144,7 @@ export class MachineLearningRepository {
       // nothing to do here
     }
 
-    this.setHealthy(url, isHealthy);
+    this.setHealthy(baseUrl + path, isHealthy);
   }
 
   private setHealthy(url: string, healthy: boolean) {
@@ -164,34 +166,44 @@ export class MachineLearningRepository {
   private async predict<T>(payload: ModelPayload, config: MachineLearningRequest): Promise<T> {
     const formData = await this.getFormData(payload, config);
 
-    for (const url of [
+    let path = '/predict';
+    if (ModelTask.FACIAL_RECOGNITION in config) {
+      path = path + '/face';
+    } else if (formData.has('text')) {
+      path = path + '/text';
+    } else {
+      path = path + '/image';
+    }
+
+    for (const baseUrl of [
       // try healthy servers first
-      ...this.config.urls.filter((url) => this.isHealthy(url)),
-      ...this.config.urls.filter((url) => !this.isHealthy(url)),
+      ...this.config.urls.filter((baseUrl) => this.isHealthy(baseUrl + path)),
+      ...this.config.urls.filter((baseUrl) => !this.isHealthy(baseUrl + path)),
     ]) {
       try {
-        let path = '/predict';
-        if (formData.has('text')) {
-          path = path + '/text';
-        } else {
-          path = path + '/image';
-        }
-        const response = await fetch(new URL(path, url), { method: 'POST', body: formData });
+
+        let url = new URL(path, baseUrl)
+        const response = await fetch(url, { method: 'POST', body: formData });
         if (response.ok) {
-          this.setHealthy(url, true);
+          this.setHealthy(baseUrl + path, true);
           return response.json();
         }
 
-        this.logger.warn(
-          `Machine learning request to "${url}" failed with status ${response.status}: ${response.statusText}`,
-        );
+        if (response.status == 501) { // not implemented
+          this.logger.debug(
+            `Machine learning request to "${url}" failed with status ${response.status} (${response.statusText}): ${await response.text()}`,
+          );
+        } else {
+          this.logger.warn(
+            `Machine learning request to "${url}" failed with status ${response.status} (${response.statusText})`,
+          );
+        }
       } catch (error: Error | unknown) {
         this.logger.warn(
-          `Machine learning request to "${url}" failed: ${error instanceof Error ? error.message : error}`,
+          `Machine learning request to "${baseUrl}" failed: ${error instanceof Error ? error.message : error}`,
         );
       }
-
-      this.setHealthy(url, false);
+      this.setHealthy(baseUrl + path, false);
     }
 
     throw new Error(`Machine learning request '${JSON.stringify(config)}' failed for all URLs`);
