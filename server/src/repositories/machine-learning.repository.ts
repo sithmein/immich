@@ -105,7 +105,7 @@ export class MachineLearningRepository {
       }
       return false;
     }
-    if (!availability.active && Date.now() - availability.lastChecked < MACHINE_LEARNING_AVAILABILITY_BACKOFF_TIME) {
+    if (!availability.active && Date.now() - availability.lastChecked > MACHINE_LEARNING_AVAILABILITY_BACKOFF_TIME) {
       // If this is an old inactive endpoint that hasn't been checked in a
       // while then check but don't wait for the result, just skip it
       // This avoids delays on every search whilst allowing higher priority
