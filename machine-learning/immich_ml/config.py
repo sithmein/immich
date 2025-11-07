@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     max_batch_size: MaxBatchSize | None = None
     openvino_precision: ModelPrecision = ModelPrecision.FP32
     rocm_precision: ModelPrecision = ModelPrecision.FP32
-    enabled_tasks : Annotated[Set[str], NoDecode] = { "face", "image", "text" }
+    enabled_tasks : Annotated[Set[str], NoDecode] = { "face", "image", "text", "ocr" }
 
     @property
     def device_id(self) -> str:

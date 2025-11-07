@@ -217,6 +217,17 @@ async def predict(
     return ORJSONResponse(response)
 
 
+@app.post("/predict/ocr", dependencies=[Depends(update_state)])
+async def predict(
+    entries: InferenceEntries = Depends(get_entries),
+    image: bytes | None = File(default=None),
+) -> Any:
+    if not ("ocr" in settings.enabled_tasks):
+        log.debug(f"Rejected OCR tasks since it has been turned off by configuration.")
+        raise HTTPException(501, "OCR has been turned off by configuration")
+    return await predict_image(entries, image)
+
+
 async def run_inference(payload: Image | str, entries: InferenceEntries) -> InferenceResponse:
     outputs: dict[ModelIdentity, Any] = {}
     response: InferenceResponse = {}

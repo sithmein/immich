@@ -125,7 +125,7 @@ export class MachineLearningRepository {
 
   private tick() {
     for (const baseUrl of this.config.urls) {
-      for (const task of ["face", "text", "image"]) {
+      for (const task of ["face", "text", "image", "ocr"]) {
         void this.check(baseUrl, "/predict/" + task);
       }
     }
@@ -169,6 +169,8 @@ export class MachineLearningRepository {
     let path = '/predict';
     if (ModelTask.FACIAL_RECOGNITION in config) {
       path = path + '/face';
+    } else if (ModelTask.OCR in config) {
+      path = path + '/ocr';
     } else if (formData.has('text')) {
       path = path + '/text';
     } else {
